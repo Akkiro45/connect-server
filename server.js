@@ -33,6 +33,19 @@ app.post('/user/signup', (req, res) => {
     res.status(400).send(e);
   });
 });
+// POST /admin/user/signup
+app.post('/admin/user/signup', (req, res) => {
+  const body = _.pick(req.body, ['name', 'sapid', 'email', 'password', 'dept']);
+  body.type = 'staff';
+  body.wallFlag = true;
+  const user = new User(body);
+  user.save().then(() => {
+    res.send({data: user});
+  }).catch((e) => {
+    res.status(400).send(e);
+  });
+});
+
 
 // GET /user/me
 app.get('/user/me', authenticate, (req, res) => {

@@ -8,4 +8,4 @@ if(env === 'development' || env === 'test') {
   });
 }
 // mongodb://Pracs:Pracs@101@ds046037.mlab.com:46037/connect
-mongodb://root:root123@ds046037.mlab.com:46037/connect
+// mongodb://root:root123@ds046037.mlab.com:46037/connect
