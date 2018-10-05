@@ -199,8 +199,8 @@ app.post('/wall', (req, res) => {
     title: req.body.title,
     createdAt: new Date().getTime(),
     _creator: req.body._id,
-    type: req.body.type
-
+    type: req.body.type,
+    dept: req.body.dept
   });
   wall.save().then((doc) => {
     res.send(doc);
@@ -209,8 +209,9 @@ app.post('/wall', (req, res) => {
   });
 });
 
-app.get('/wall', (req, res) => {
-  Wall.find().sort({ createdAt: -1 }).then((walls) => {
+app.get('/wall/:dept', (req, res) => {
+  const dept = req.params.dept;
+  Wall.find({ dept }).sort({ createdAt: -1 }).then((walls) => {
     res.send({walls});
   }, (e) => {
     res.status(400).send(e);

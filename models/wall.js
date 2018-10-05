@@ -23,6 +23,11 @@ const Wall = mongoose.model('Wall', {
   type: {
     type: String,
     required: true
+  },
+  dept: {
+    type: String,
+    required: true,
+    trim: true
   }
 });
 
