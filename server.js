@@ -4,6 +4,9 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const {ObjectID} = require('mongodb');
 const bcrypt = require('bcryptjs');
+const cors = require('cors');
+
+
 // https://git.heroku.com/glacial-basin-97045.git
 // https://glacial-basin-97045.herokuapp.com/
 // https://glacial-basin-97045.herokuapp.com/
@@ -12,12 +15,14 @@ const {mongoose} = require('./db/mongoose');
 const {User} = require('./models/user');
 const {Admin} = require('./models/admin');
 const {Post} = require('./models/post');
+const {Wall} = require('./models/wall');
 const {authenticate, authenticateAdmin} = require('./middleware/authenticate');
 
 const app = express();
 const port = process.env.PORT;
 
 app.use(bodyParser.json());
+app.use(cors());
 
 // Routs
 // User ----------------------------
@@ -185,6 +190,54 @@ app.delete('/posts/:id', (req, res) => {
   }).catch((e) => res.status(400).send('ERROR'));
 });
 
+
+// Wall--------------------------------
+
+app.post('/wall', (req, res) => {
+  const wall = new Wall({
+    text: req.body.text,
+    title: req.body.title,
+    createdAt: new Date().getTime(),
+    _creator: req.body._id,
+    type: req.body.type
+
+  });
+  wall.save().then((doc) => {
+    res.send(doc);
+  }, (e) => {
+    res.status(400).send(e);
+  });
+});
+
+app.get('/wall', (req, res) => {
+  Wall.find().sort({ createdAt: -1 }).then((walls) => {
+    res.send({walls});
+  }, (e) => {
+    res.status(400).send(e);
+  });
+});
+
+app.get('/wall/:id', (req, res) => {
+  const id = req.params.id;
+  if(!ObjectID.isValid(id)) {
+    return res.status(400).send(id + " is not valid ID.");
+  }
+  Wall.findOne({ _id: id, _creator: req.body._id}).then((wall) => {
+    if(!wall) return res.status(404).send(id + " Dose not exist.");
+    res.status(200).send({wall});
+  }).catch((e) => res.status(400).send("ERROR"));
+});
+
+app.delete('/wall/:id', (req, res) => {
+  const id = req.params.id;
+  if(!ObjectID.isValid(id)) {
+    return res.status(400).send(id + ' is not valid ID.');
+  }
+  Wall.findOneAndRemove({ _id: id }).then((wall) => {
+    if(!wall) return res.status(404).send(id + ' Doen not exist.');
+    res.status(200).send({wall});
+  }).catch((e) => res.status(400).send('ERROR'));
+});
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}.`);
