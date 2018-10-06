@@ -16,6 +16,8 @@ const {User} = require('./models/user');
 const {Admin} = require('./models/admin');
 const {Post} = require('./models/post');
 const {Wall} = require('./models/wall');
+const {Question} = require('./models/question');
+const {Answer} = require('./models/answer');
 const {authenticate, authenticateAdmin} = require('./middleware/authenticate');
 
 const app = express();
@@ -239,6 +241,72 @@ app.delete('/wall/:id', (req, res) => {
     res.status(200).send({wall});
   }).catch((e) => res.status(400).send('ERROR'));
 });
+
+
+// Question--------------------------------
+
+app.post('/question', (req, res) => {
+  const ques = new Question({
+    text: req.body.text,
+    title: req.body.title,
+    createdAt: new Date().getTime(),
+    _creator: req.body._id,
+    type: req.body.type,
+    dept: req.body.dept
+  });
+  ques.save().then((doc) => {
+    res.send(doc);
+  }, (e) => {
+    res.status(400).send(e);
+  });
+});
+
+app.get('/questions/:dept', (req, res) => {
+  const dept = req.params.dept;
+  Question.find({ dept }).sort({ createdAt: -1 }).then((ques) => {
+    res.send({ ques });
+  }, (e) => {
+    res.status(400).send(e);
+  });
+});
+
+app.get('/question/:id', (req, res) => {
+  const id = req.params.id;
+  if(!ObjectID.isValid(id)) {
+    return res.status(400).send(id + " is not valid ID.");
+  }
+  Question.findOne({ _id: id, _creator: req.body._id}).then((ques) => {
+    if(!ques) return res.status(404).send(id + " Dose not exist.");
+    res.status(200).send({ques});
+  }).catch((e) => res.status(400).send("ERROR"));
+});
+
+// Answer ------------------
+app.post('/answer', (req, res) => {
+  const ans = new Answer({
+    text: req.body.text,
+    createdAt: new Date().getTime(),
+    _creator: req.body._id,
+    type: req.body.type,
+    q_id: req.body.q_id
+  });
+  ans.save().then((doc) => {
+    res.send(doc);
+  }, (e) => {
+    res.status(400).send(e);
+  });
+});
+
+app.get('/answers/:id', (req, res) => {
+  const q_id = req.params.id;
+  Answer.find({ q_id }).sort({ createdAt: -1 }).then((ans) => {
+    res.send({ans});
+  }, (e) => {
+    res.status(400).send(e);
+  });
+});
+
+
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}.`);
