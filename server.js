@@ -254,11 +254,25 @@ app.post('/question', (req, res) => {
     type: req.body.type,
     dept: req.body.dept
   });
-  ques.save().then((doc) => {
-    res.send(doc);
-  }, (e) => {
-    res.status(400).send(e);
-  });
+  User.findById(ques._creator)
+    .then(user => {
+      if(!user) {
+        res.send(400).send('User not found');
+      } else {
+        ques.name = user.name;
+        console.log(ques);
+        flag = true;
+        ques.save().then((doc) => {
+          console.log(doc);
+          res.send(doc);
+        }, (e) => {
+          res.status(400).send(e);
+        });
+      }
+    })
+    .catch(e => {
+      res.status(400).send(e);
+    });
 });
 
 app.get('/questions/:dept', (req, res) => {
@@ -290,20 +304,49 @@ app.post('/answer', (req, res) => {
     type: req.body.type,
     q_id: req.body.q_id
   });
-  ans.save().then((doc) => {
-    res.send(doc);
+  // ans.save().then((doc) => {
+  //   res.send(doc);
+  // }, (e) => {
+  //   res.status(400).send(e);
+  // });
+
+  User.findById(ans._creator)
+    .then(user => {
+      if(!user) {
+        res.send(400).send('User not found');
+      } else {
+        ans.name = user.name;
+        console.log(ans);
+        ans.save().then((doc) => {
+          res.send(doc);
+        }, (e) => {
+          res.status(400).send(e);
+        });
+      }
+    })
+    .catch(e => {
+      res.status(400).send(e);
+    });
+});
+
+app.get('/answers/:id', (req, res) => {
+  const q_id = req.params.id;
+  Answer.find({ q_id }).then((ans) => {
+    res.send({ans});
   }, (e) => {
     res.status(400).send(e);
   });
 });
 
-app.get('/answers/:id', (req, res) => {
-  const q_id = req.params.id;
-  Answer.find({ q_id }).sort({ createdAt: -1 }).then((ans) => {
-    res.send({ans});
-  }, (e) => {
-    res.status(400).send(e);
-  });
+app.post('/answer/votes/:id', (req, res) => {
+  const a_id = req.params.id;
+  Answer.findByIdAndUpdate(a_id, { $inc: {[req.body.type]: 1} }, {new: true})
+    .then(ans => {
+      res.send(ans);
+    })
+    .catch(e => {
+      res.status(400).send(e);
+    });
 });
 
 

@@ -3,8 +3,6 @@ const mongoose = require('mongoose');
 const Question = mongoose.model('Question', {
   text: {
     type: String,
-    required: true,
-    minlength: 3,
     trim: true
   },
   title: {
@@ -18,6 +16,10 @@ const Question = mongoose.model('Question', {
   },
   _creator: {
     type: mongoose.Schema.Types.ObjectId,
+    required: true
+  },
+  name: {
+    type: String,
     required: true
   },
   dept: {
