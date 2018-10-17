@@ -55,8 +55,9 @@ app.post('/admin/user/signup', (req, res) => {
 
 
 // GET /user/me
-app.get('/user/me', (req, res) => {
-  res.send(req.user);
+app.get('/user/me/:id', (req, res) => {
+  const id = req.params.id;
+  res.send(req.id);
 });
 
 // POST /user/login
