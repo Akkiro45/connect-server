@@ -55,7 +55,7 @@ app.post('/admin/user/signup', (req, res) => {
 
 
 // GET /user/me
-app.get('/user/me', authenticate, (req, res) => {
+app.get('/user/me', (req, res) => {
   res.send(req.user);
 });
 
@@ -331,7 +331,7 @@ app.post('/answer', (req, res) => {
 
 app.get('/answers/:id', (req, res) => {
   const q_id = req.params.id;
-  Answer.find({ q_id }).then((ans) => {
+  Answer.find({ q_id }).sort({ createdAt: -1 }).then((ans) => {
     res.send({ans});
   }, (e) => {
     res.status(400).send(e);
