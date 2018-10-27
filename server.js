@@ -1,3 +1,7 @@
+// Links
+// https://git.heroku.com/glacial-basin-97045.git
+// https://glacial-basin-97045.herokuapp.com/
+// https://connect-22b11.firebaseapp.com/
 require('./config/config.js');
 const _ = require('lodash');
 const express = require('express');
@@ -6,11 +10,6 @@ const {ObjectID} = require('mongodb');
 const bcrypt = require('bcryptjs');
 const cors = require('cors');
 
-
-// https://git.heroku.com/glacial-basin-97045.git
-// https://glacial-basin-97045.herokuapp.com/
-// https://glacial-basin-97045.herokuapp.com/
-// https://connect-22b11.firebaseapp.com/
 const {mongoose} = require('./db/mongoose');
 const {User} = require('./models/user');
 const {Admin} = require('./models/admin');
